@@ -20,19 +20,18 @@
 
 {% block main %}
     <h1>Sign In</h1>
-    <form action="" method="post" name="login">
-        {{ form.hidden_tag() }}
-        <p>
-            Please enter your OpenID, or select one of the providers below:<br>
-            {{ form.openid(size=80) }}
-            {% for error in form.openid.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}<br>
-            |{% for prkey in providers.keys() %}
-                <a href="javascript:set_openid('{{ providers[prkey] }}', '{{ prkey }}');">{{ prkey }}</a> |
-            {% endfor %}
-        </p>
-        <p>{{ form.remember_me }} Remember Me</p>
-        <p><input type="submit" value="Sign In"></p>
+    {% if error %}
+    <p class=error><strong>Error:</strong> {{ error }} </p>
+  {% endif %} 
+   
+    <form actions="{{ url_for('login') }}" method="post" name="login">
+        <dl> 
+    <dt>Username: </dt>
+    <dd>{{ form.username}}</dd> 
+    <dt>Password: 
+    <dd>{{ form.password}}</dd>
+    <dd><input type="submit" value="Sign in"> </dd>
+</dl>
+        
     </form>
 {% endblock %}

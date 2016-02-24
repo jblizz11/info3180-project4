@@ -7,14 +7,14 @@ This file creates your application.
 """
 
 from app import app
-from flask import render_template, request, redirect, url_for,jsonify,g,session
+from flask import render_template, request, redirect, url_for,jsonify,g,session,flash
 from app import db
 
 from flask.ext.wtf import Form 
-from wtforms.fields import TextField # other fields include PasswordField 
+from wtforms.fields import TextField, PasswordField# other fields include PasswordField 
 from wtforms.validators import Required, Email
 from app.models import Myprofile
-from app.forms import LoginForm
+from app.forms import LoginForm,LoginNew
 
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
@@ -23,6 +23,9 @@ from app import oid, lm
 class ProfileForm(Form):
      first_name = TextField('First Name', validators=[Required()])
      last_name = TextField('Last Name', validators=[Required()])
+     nick_name = TextField('Nick Name', validators=[Required()])
+     email_name = TextField('Email Name', validators=[Required()])
+     password_name = PasswordField('Password Name', validators=[Required()])
      # evil, don't do this
      image = TextField('Image', validators=[Required(), Email()])
 
@@ -34,20 +37,51 @@ def before_request():
 ###
 # Routing for your application.
 ###
-@app.route('/login', methods=['GET', 'POST'])
-@oid.loginhandler
+# @app.route("/login", methods=['GET', 'POST'])
+# @oid.loginhandler
+# def login():
+#     if g.user is not None and g.user.is_authenticated():
+#         return redirect(url_for('index'))
+#     form = LoginForm()
+#     print app.config['OPENID_PROVIDERS']
+#     if form.validate_on_submit():
+#         session['remember_me'] = form.remember_me.data
+#         return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
+#     return render_template('login.html', 
+#                           title='Sign In',
+#                           form=form,
+#                           providers=app.config['OPENID_PROVIDERS'])
+                          
+@app.route('/login/', methods=["GET", "POST"])
 def login():
-    if g.user is not None and g.user.is_authenticated():
-        return redirect(url_for('index'))
-    form = LoginForm()
-    print app.config['OPENID_PROVIDERS']
-    if form.validate_on_submit():
-        session['remember_me'] = form.remember_me.data
-        return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
-    return render_template('login.html', 
-                           title='Sign In',
-                           form=form,
-                           providers=app.config['OPENID_PROVIDERS'])
+    form = LoginNew()
+    error = None 
+    if request.method == "POST":
+       
+    # change this to actually validate the user
+        usernameform= request.form['username'] 
+        userdatabase= Myprofile.query.filter(Myprofile.email == usernameform).one()
+       
+   # if form.username.data:
+        # login and validate the user...
+        if request.form['username'] != userdatabase.email:
+            error = 'Invalid username' 
+        elif request.form['password'] != userdatabase.password:
+            error = 'Invalid password' 
+        else: 
+            session['logged_in'] = True
+            flash('You were logged in') 
+            id=userdatabase.id
+             return render_template("profile_view.html",)
+        # missing
+        # based on password and username
+        # get user id, load into session
+       # user = load_user("1")
+      #  login_user(user)
+        #flash("Logged in successfully.")
+        #return redirect(request.args.get("next") or url_for("home"))
+    return render_template("login.html",form=form,error=error)
+    
 @app.route('/')
 def home():
     """Render website's home page."""
@@ -58,10 +92,12 @@ def profile_add():
     if request.method == 'POST':
         first_name = request.form['first_name']
         last_name = request.form['last_name']
-
+        nick_name = request.form['nick_name']
+        email_name = request.form['email_name']
+        password_name = request.form['password_name']
         # write the information to the database
         newprofile = Myprofile(first_name=first_name,
-                               last_name=last_name)
+                               last_name=last_name,nickname=nick_name,email=email_name,password=password_name)
         db.session.add(newprofile)
         db.session.commit()
 
@@ -84,6 +120,7 @@ def profile_list():
 def profile_view(id):
     profile = Myprofile.query.get(id)
     return render_template('profile_view.html',profile=profile)
+
 
 
 @app.route('/about/')
