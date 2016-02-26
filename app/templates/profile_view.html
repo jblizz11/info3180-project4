@@ -1,16 +1,49 @@
 {% extends "base.html" %}
 
 
+{% block css %}
+<style>
+    .boxes{
+        border:1px solid black;
+        background-color:#ADD8E6;
+    }
+    img{
+        max-width:100%;
+    }
+    #pad{
+        padding-top:20px;
+    }
+</style>
+{% endblock %}
+
 {% block js %}
 {% endblock %}
 
-
 {% block main %}
+<div class="container" id="pad">
+    <div class="col-md-3">
+        <img src="{{ url_for('static',filename=profile.image)}}"style="max-height:500px,max-width:500px">
+    </div>
+    <div class="col-md-9">
+        <div class="boxes">
+            <p>{{profile.first_name}} {{profile.last_name}}</p>
+        </div>
+        <br>
+        <div class="boxes">
+            <p>Profile Added On: {{profile.profile_add_on}}</p>
+        </div>
+        <div class="boxes">
+            <p> Username: {{profile.user_name}} <br>
+                 ID: {{profile.id}} <br>
+                 Sex: {{profile.sex}} <br>
+                 Age: {{profile.age}} <br>
+                 Highest Score: {{profile.high_score}} <br>
+                 TDollars: {{profile.tdollars}} <br>
+            </p>
+        </div>
+    </div>
+</div>
 
-{{profile.first_name}}
-{{profile.last_name}}
-{{profile.image}}
-<img src="{{ url_for('static',filename="bag description.JPG")}}" >
-
-
+{{profile}}
+{{a}}
 {% endblock %}

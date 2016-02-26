@@ -6,6 +6,8 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
 import os
+import time
+import json
 from app import app
 from flask import render_template, request, redirect, url_for,jsonify,g,session,flash
 from app import db
@@ -29,6 +31,7 @@ class ProfileForm(Form):
      last_name = TextField('Last Name', validators=[Required()])
      age = TextField('Age', validators=[Required()])
      sex=SelectField(u'Sex',choices=[('M','Male'),('F','Female')])
+     user_name= TextField('User Name', validators=[Required()])
      email_name = TextField('Email Name', validators=[Required()])
      password_name = PasswordField('Password Name', validators=[Required()])
      image        = FileField(u'Image File')
@@ -105,6 +108,8 @@ def profile_add():
         email_name = request.form['email_name']
         option_name= request.form['sex']
         password_name = request.form['password_name']
+        timeadded= time.strftime("%a, %d %b %Y ");
+        user_name=request.form['user_name']
         form = ProfileForm(request.form)
         
         image_data = request.files[form.image.name].read()
@@ -115,7 +120,7 @@ def profile_add():
         #open(os.path.join("app/static/uploads", form.image.data), 'w').write(image_data)
         # write the information to the database
         newprofile = Myprofile(first_name=first_name,
-                               last_name=last_name,age=age_name,sex=option_name,email=email_name,image=filename,password=password_name)
+                               last_name=last_name,age=age_name,sex=option_name,user_name=user_name,profile_add_on=timeadded,email=email_name,image=filename,password=password_name)
         db.session.add(newprofile)
         db.session.commit()
 
@@ -130,20 +135,28 @@ def profile_add():
 def profile_list():
     profiles = Myprofile.query.all()
     if request.method == "POST":
-        return jsonify({"age":4, "name":"John"})
-    return render_template('profile_list.html',
+        profilelist=[]
+        for profiles in profiles:
+            profilelist.append({'id':profiles.id,'username':profiles.user_name})
+        return jsonify(profiles=profilelist)
+    else:
+        
+        return render_template('profile_list.html',
                             profiles=profiles)
 
-@app.route('/profile/<int:id>')
-def profile_view(id):
-    profile = Myprofile.query.get(id)
-    return render_template('profile_view.html',profile=profile)
+@app.route('/profile/<userid>')
+def profile_view(userid):
+    profile = Myprofile.query.filter(Myprofile.id==userid).one()
+    if request.method == 'POST':
+        return jsonify(id=profile.id,username=profile.user_name, sex=profile.sex, age=profile.age,profile_add_on=profile.profile_add_on,highscore=profile.high_score, tdollars=profile.tdollars,)
+    else:
+        return render_template('profile_view.html',profile=profile,a=userid)
     
-@app.route('/profilenew/')    
-def profile():
-    a=int(idname)
-    profile=Myprofile.query.filter(Myprofile.id==a).one()
-    return render_template('profile_view.html',profile=profile,a=a)
+#@app.route('/profilenew/')    
+#def profile():
+ #   a=int(idname)
+  #  profile=Myprofile.query.filter(Myprofile.id==a).one()
+   # return render_template('profile_view.html',profile=profile,a=a)
 
 
 @app.route('/about/')
