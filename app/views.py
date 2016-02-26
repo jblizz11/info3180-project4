@@ -29,6 +29,7 @@ class ProfileForm(Form):
      # evil, don't do this
      image = TextField('Image', validators=[Required(), Email()])
 
+idname=2;
 
 @app.before_request
 def before_request():
@@ -54,15 +55,15 @@ def before_request():
                           
 @app.route('/login/', methods=["GET", "POST"])
 def login():
-    form = LoginNew()
+    form = LoginNew(request.form)
     error = None 
     if request.method == "POST":
        
     # change this to actually validate the user
-        usernameform= request.form['username'] 
+        usernameform= form.username.data 
         userdatabase= Myprofile.query.filter(Myprofile.email == usernameform).one()
        
-   # if form.username.data:
+   #if form.username.data:
         # login and validate the user...
         if request.form['username'] != userdatabase.email:
             error = 'Invalid username' 
@@ -71,8 +72,9 @@ def login():
         else: 
             session['logged_in'] = True
             flash('You were logged in') 
-            id=userdatabase.id
-             return render_template("profile_view.html",)
+            global idname
+            idname=userdatabase.id
+            return redirect(url_for ('profile'))
         # missing
         # based on password and username
         # get user id, load into session
@@ -120,7 +122,12 @@ def profile_list():
 def profile_view(id):
     profile = Myprofile.query.get(id)
     return render_template('profile_view.html',profile=profile)
-
+    
+@app.route('/profilenew/')    
+def profile():
+    a=int(idname)
+    profile=Myprofile.query.filter(Myprofile.id==a).one()
+    return render_template('profile_view.html',profile=profile,a=a)
 
 
 @app.route('/about/')
