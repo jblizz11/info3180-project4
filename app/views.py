@@ -5,14 +5,14 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 
 This file creates your application.
 """
-
+import os
 from app import app
 from flask import render_template, request, redirect, url_for,jsonify,g,session,flash
 from app import db
 
 from flask.ext.wtf import Form 
-from wtforms.fields import TextField, PasswordField# other fields include PasswordField 
-from wtforms.validators import Required, Email
+from wtforms.fields import TextField, PasswordField,SelectField,FileField# other fields include PasswordField 
+from wtforms.validators import Required, Email,Regexp
 from app.models import Myprofile
 from app.forms import LoginForm,LoginNew
 
@@ -20,14 +20,21 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, oid
 from app import oid, lm
 
+SECRET_KEY="super secure key"
+
+app.config.from_object(__name__)
+
 class ProfileForm(Form):
      first_name = TextField('First Name', validators=[Required()])
      last_name = TextField('Last Name', validators=[Required()])
-     nick_name = TextField('Nick Name', validators=[Required()])
+     age = TextField('Age', validators=[Required()])
+     sex=SelectField(u'Sex',choices=[('M','Male'),('F','Female')])
      email_name = TextField('Email Name', validators=[Required()])
      password_name = PasswordField('Password Name', validators=[Required()])
+     image        = FileField(u'Image File')
+     #description  = TextAreaField(u'Image Description')    
      # evil, don't do this
-     image = TextField('Image', validators=[Required(), Email()])
+     ##image = TextField('Image', validators=[Required(), Email()])
 
 idname=2;
 
@@ -94,12 +101,21 @@ def profile_add():
     if request.method == 'POST':
         first_name = request.form['first_name']
         last_name = request.form['last_name']
-        nick_name = request.form['nick_name']
+        age_name = request.form['age']
         email_name = request.form['email_name']
+        option_name= request.form['sex']
         password_name = request.form['password_name']
+        form = ProfileForm(request.form)
+        
+        image_data = request.files[form.image.name].read()
+        #form.image.file.save(os.path.join("app/static/uploads", image_data))
+        file = request.files[form.image.name]
+        filename = file.filename
+        file.save(os.path.join("app/static/uploads", filename))
+        #open(os.path.join("app/static/uploads", form.image.data), 'w').write(image_data)
         # write the information to the database
         newprofile = Myprofile(first_name=first_name,
-                               last_name=last_name,nickname=nick_name,email=email_name,password=password_name)
+                               last_name=last_name,age=age_name,sex=option_name,email=email_name,image=filename,password=password_name)
         db.session.add(newprofile)
         db.session.commit()
 
