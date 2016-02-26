@@ -152,11 +152,11 @@ def profile_view(userid):
     else:
         return render_template('profile_view.html',profile=profile,a=userid)
     
-#@app.route('/profilenew/')    
-#def profile():
- #   a=int(idname)
-  #  profile=Myprofile.query.filter(Myprofile.id==a).one()
-   # return render_template('profile_view.html',profile=profile,a=a)
+@app.route('/profileview/')    
+def profile():
+    a=int(idname)
+    profile=Myprofile.query.filter(Myprofile.id==a).one()
+    return render_template('profile_view.html',profile=profile,a=a)
 
 
 @app.route('/about/')

@@ -14,7 +14,18 @@ class Myprofile(db.Model):
     email = db.Column(db.String(120),index=True, unique=True)
     password =db.Column(db.String(45),unique=True) 
  
- 
+    def __init__(self,image,user_name,first_name,last_name,age,sex,profile_add_on,password,email):
+        self.image = image
+        self.user_name = user_name
+        self.first_name = first_name
+        self.last_name= last_name
+        self.age = age
+        self.sex = sex
+        self.userhighscore = 0
+        self.usertdollars = 0
+        self.profile_add_on=profile_add_on
+        self.password=password
+        self.email=email
     
     def is_authenticated(self):
         return True
