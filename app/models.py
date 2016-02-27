@@ -7,7 +7,7 @@ class Myprofile(db.Model):
     sex =db.Column(db.String(20))
     image= db.Column(db.String(120))
     user_name=db.Column(db.String(40))
-    profile_add_on=db.Column(db.String(40))
+    profile_add_on=db.Column(db.DateTime,nullable=False)
     high_score=db.Column(db.Integer)
     tdollars=db.Column(db.Integer)
     #image=db.Column(db.LargeBinary)

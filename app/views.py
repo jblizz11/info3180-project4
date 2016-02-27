@@ -37,8 +37,6 @@ class ProfileForm(Form):
      # evil, don't do this
      ##image = TextField('Image', validators=[Required(), Email()])
 
-idname=2;
-
 
 
 @app.route('/login/', methods=["GET", "POST"])
@@ -60,8 +58,7 @@ def login():
         else: 
             session['logged_in'] = True
             flash('You were logged in') 
-            global idname
-            idname=userdatabase.id
+          
             return redirect(url_for ('profile'))
         # missing
         # based on password and username
@@ -87,7 +84,7 @@ def profile_add():
         email_name = request.form['email_name']
         option_name= request.form['sex']
         password_name = request.form['password_name']
-        timeadded= time.strftime("%a, %d %b %Y ");
+    
         user_name=request.form['user_name']
         form = ProfileForm(request.form)
         
@@ -99,12 +96,11 @@ def profile_add():
         #open(os.path.join("app/static/uploads", form.image.data), 'w').write(image_data)
         # write the information to the database
         newprofile = Myprofile(first_name=first_name,
-                               last_name=last_name,age=age_name,sex=option_name,user_name=user_name,profile_add_on=timeadded,email=email_name,image=filename,password=password_name)
+                               last_name=last_name,age=age_name,sex=option_name,user_name=user_name,profile_add_on=datetimenow(),email=email_name,image=filename,password=password_name)
         db.session.add(newprofile)
         db.session.commit()
 
-        return "{} {} was added to the database".format(request.form['first_name'],
-                                             request.form['last_name'])
+        return redirect('/profile/'+str(Myprofile.query.filter_by(user_name=newprofile.user_name).first().id))
 
     form = ProfileForm()
     return render_template('profile_add.html',
@@ -127,21 +123,29 @@ def profile_list():
 def profile_view(userid):
     profile = Myprofile.query.filter(Myprofile.id==userid).one()
     if request.method == 'POST':
-        return jsonify(id=profile.id,username=profile.user_name, sex=profile.sex, age=profile.age,profile_add_on=profile.profile_add_on,highscore=profile.high_score, tdollars=profile.tdollars,)
+        return jsonify(id=profile.id,username=profile.user_name, sex=profile.sex, age=profile.age,profile_add_on=timeinfo(profile.profile_add_on),highscore=profile.high_score, tdollars=profile.tdollars,)
     else:
         return render_template('profile_view.html',profile=profile,a=userid)
     
-@app.route('/profileview/')    
-def profile():
-    a=int(idname)
-    profile=Myprofile.query.filter(Myprofile.id==a).one()
-    return render_template('profile_view.html',profile=profile,a=a)
+
 
 
 @app.route('/about/')
 def about():
     """Render the website's about page."""
     return render_template('about.html')
+
+
+
+def timeinfo(entry):
+    day = time.strftime("%a")
+    date = time.strftime("%d")
+    if (date <10):
+        date = date.lstrip('0')
+    month = time.strftime("%b")
+    year = time.strftime("%Y")
+    return day + ", " + date + " " + month + " " + year
+
 
 
 ###
