@@ -14,17 +14,15 @@ from app import db
 
 from flask.ext.wtf import Form 
 from wtforms.fields import TextField, PasswordField,SelectField,FileField# other fields include PasswordField 
-from wtforms.validators import Required, Email,Regexp
+from wtforms.validators import Required, Email
 from app.models import Myprofile
 from app.forms import LoginForm,LoginNew
 
-from flask.ext.login import login_user, logout_user, current_user, login_required
-from app import app, db, lm, oid
-from app import oid, lm
 
-#SECRET_KEY="super secure key"
 
-#app.config.from_object(__name__)
+SECRET_KEY="super secure key"
+
+app.config.from_object(__name__)
 
 class ProfileForm(Form):
      first_name = TextField('First Name', validators=[Required()])
@@ -42,29 +40,7 @@ class ProfileForm(Form):
 idname=2;
 
 
-@app.before_request
-def before_request():
-    g.user = current_user
-    
-    
-###
-# Routing for your application.
-###
-# @app.route("/login", methods=['GET', 'POST'])
-# @oid.loginhandler
-# def login():
-#     if g.user is not None and g.user.is_authenticated():
-#         return redirect(url_for('index'))
-#     form = LoginForm()
-#     print app.config['OPENID_PROVIDERS']
-#     if form.validate_on_submit():
-#         session['remember_me'] = form.remember_me.data
-#         return oid.try_login(form.openid.data, ask_for=['nickname', 'email'])
-#     return render_template('login.html', 
-#                           title='Sign In',
-#                           form=form,
-#                           providers=app.config['OPENID_PROVIDERS'])
-                          
+
 @app.route('/login/', methods=["GET", "POST"])
 def login():
     form = LoginNew(request.form)
@@ -136,7 +112,7 @@ def profile_add():
 
 @app.route('/profiles/',methods=["POST","GET"])
 def profile_list():
-    profiles = Myprofile.query.all()
+    profiles = db.session.query(Myprofile).all()
     if request.method == "POST":
         profilelist=[]
         for profiles in profiles:
