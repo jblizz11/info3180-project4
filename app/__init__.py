@@ -17,8 +17,10 @@ app.config['OPENID_PROVIDERS'] = COMMON_PROVIDERS
 #app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://yzicurmnvkqqhp:Kpl-6hLvDaRcPCelsrxdmydSgi@ec2-23-21-219-209.compute-1.amazonaws.com:5432/de7vj5i2j9deb1"
 app.config['SQLALCHEMY_DATABASE_URI']='postgres://ojzmhgzqgzxjmk:lhE-r3F0cCZOcaoaseIPSFaE9Q@ec2-54-83-198-159.compute-1.amazonaws.com:5432/db0p2461btcvuh'
 db = SQLAlchemy(app)
+db.create_all()
+
 lm = LoginManager()
 lm.init_app(app)
 oid = OpenID(app,'/tmp')
 
-from app import views
+from app import views, models 
