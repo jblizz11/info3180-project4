@@ -22,9 +22,9 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from app import app, db, lm, oid
 from app import oid, lm
 
-SECRET_KEY="super secure key"
+#SECRET_KEY="super secure key"
 
-app.config.from_object(__name__)
+#app.config.from_object(__name__)
 
 class ProfileForm(Form):
      first_name = TextField('First Name', validators=[Required()])
