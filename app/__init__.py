@@ -9,8 +9,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = "this is a super secure key"
 app.config['OPENID_PROVIDERS'] = COMMON_PROVIDERS
 # remember to change to heroku's databas
-db_conn= 'postgresql+psycopg2://lab5:lab5@localhost/lab5' 
-app.config['SQLALCHEMY_DATABASE_URI'] = db_conn
+#db_conn= 'postgresql+psycopg2://lab5:lab5@localhost/lab5' 
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URI']#db_conn
 #app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://yzicurmnvkqqhp:Kpl-6hLvDaRcPCelsrxdmydSgi@ec2-23-21-219-209.compute-1.amazonaws.com:5432/de7vj5i2j9deb1"
 db = SQLAlchemy(app)
 lm = LoginManager()

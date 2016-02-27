@@ -41,9 +41,11 @@ class ProfileForm(Form):
 
 idname=2;
 
+
 @app.before_request
 def before_request():
     g.user = current_user
+    
     
 ###
 # Routing for your application.
@@ -101,6 +103,7 @@ def home():
 
 @app.route('/profile/', methods=['POST','GET'])
 def profile_add():
+    
     if request.method == 'POST':
         first_name = request.form['first_name']
         last_name = request.form['last_name']
