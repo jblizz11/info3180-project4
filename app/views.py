@@ -96,7 +96,7 @@ def profile_add():
         #open(os.path.join("app/static/uploads", form.image.data), 'w').write(image_data)
         # write the information to the database
         newprofile = Myprofile(first_name=first_name,
-                               last_name=last_name,age=age_name,sex=option_name,user_name=user_name,profile_add_on=datetimenow(),email=email_name,image=filename,password=password_name)
+                               last_name=last_name,age=age_name,sex=option_name,user_name=user_name,profile_add_on=datetime.now(),email=email_name,image=filename,password=password_name)
         db.session.add(newprofile)
         db.session.commit()
 
