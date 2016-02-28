@@ -124,8 +124,9 @@ def profile_list():
 @app.route('/profile/<userid>')
 def profile_view(userid):
     profile = Myprofile.query.filter(Myprofile.id==userid).one()
+    image = '/static/uploads/' + profile.image
     if request.method == 'POST':
-        return jsonify(id=profile.id,username=profile.user_name, sex=profile.sex, age=profile.age,profile_add_on=timeinfo(profile.profile_add_on),highscore=profile.high_score, tdollars=profile.tdollars)
+        return jsonify(id=profile.id,username=profile.user_name,image=image,sex=profile.sex, age=profile.age,profile_add_on=timeinfo(profile.profile_add_on),highscore=profile.high_score, tdollars=profile.tdollars)
     else:
         date=timeinfo(profile.profile_add_on)
         profile={'id': profile.id,'username': profile.user_name,'first_name':profile.first_name,'last_name':profile.last_name, 'sex': profile.sex, 'age': profile.age,'profile_add_on':date,'highscore': profile.high_score, 'tdollars': profile.tdollars}
