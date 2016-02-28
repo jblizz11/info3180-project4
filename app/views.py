@@ -7,6 +7,8 @@ This file creates your application.
 """
 import os
 import time
+import datetime
+#from datetime import *
 import json
 from app import app
 from flask import render_template, request, redirect, url_for,jsonify,g,session,flash
@@ -123,9 +125,11 @@ def profile_list():
 def profile_view(userid):
     profile = Myprofile.query.filter(Myprofile.id==userid).one()
     if request.method == 'POST':
-        return jsonify(id=profile.id,username=profile.user_name, sex=profile.sex, age=profile.age,profile_add_on=timeinfo(profile.profile_add_on),highscore=profile.high_score, tdollars=profile.tdollars,)
+        return jsonify(id=profile.id,username=profile.user_name, sex=profile.sex, age=profile.age,profile_add_on=timeinfo(profile.profile_add_on),highscore=profile.high_score, tdollars=profile.tdollars)
     else:
-        return render_template('profile_view.html',profile=profile,a=userid)
+        date=timeinfo(profile.profile_add_on)
+        profile={'id': profile.id,'username': profile.user_name,'first_name':profile.first_name,'last_name':profile.last_name, 'sex': profile.sex, 'age': profile.age,'profile_add_on':date,'highscore': profile.high_score, 'tdollars': profile.tdollars}
+        return render_template('profile_view.html',profile=profile)
     
 
 
