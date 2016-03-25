@@ -8,6 +8,9 @@ Flask-Migrate
 Flask-Login
 Flask-OpenId
 psycopg2
+requests
+bcrypt
+BeautifulSoup
 
 # ----------------------
 # Testing
