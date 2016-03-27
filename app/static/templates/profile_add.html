@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+
+{% block js %}
+{% endblock %}
+
+
+{% block main %}
+<form action="{{ url_for('profile_add') }}" method="post"  enctype="multipart/form-data" class="profile_add">
+       <dl>
+      
+       <dt>First name:</dt> <dd>{{ form.first_name }}</dd>
+       <dt>Last name:</dt> <dd>{{ form.last_name }}</dd>
+       <dt>Age:</dt><dd> {{ form.age }}</dd>
+       <dt>Username</dt><dd>{{form.user_name}}</dd>
+      <dt>Email:</dt><dd> {{ form.email_name}}</dd>
+      <dt>Password:</dt><dd> {{ form.password_name }}</dd>
+      <dt>Sex:</dt><dd>{{form.sex}}</dd><br>
+      <dt>Profile Image:</dt><dd>{{form.image}}</dd>
+       <dd><input type="submit" />   </dd>             
+</dl>
+</form> 
+{% endblock %}

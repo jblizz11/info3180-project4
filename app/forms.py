@@ -1,5 +1,5 @@
 from flask.ext.wtf import Form
-from wtforms import StringField, BooleanField,StringField,PasswordField,SubmitField,TextAreaField,FileField,SelectField
+from wtforms import StringField, BooleanField,StringField,PasswordField,SubmitField,TextAreaField,FileField,SelectField,TextField
 from wtforms.validators import DataRequired,Required
 
 
@@ -18,3 +18,12 @@ class WishForm(Form):
     url = StringField('Search For Image')
     status = SelectField('Status',choices=[('0','Not Received'),('1','Received')])
     submit = SubmitField('Add Wish')
+    
+class SignUpForm(Form):
+    uploadedfile = FileField('User Image')
+    username = StringField('Username', validators=[Required()])
+    password = PasswordField('Password', validators=[Required()])
+    email = StringField('Email', validators=[Required()])
+    first_name = StringField('First Name', validators=[Required()])
+    last_name = StringField('Last Name', validators=[Required()])
+    submit = SubmitField('Sign Up')

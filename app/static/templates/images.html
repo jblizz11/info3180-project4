@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block js %}
+
+{% endblock %}
+
+{% block main %}
+<div class="container">
+    <h2>Choose image</h2>
+      <ul>{% for image in images %}
+      <button><img src="{{image}}"></button>
+    {% endfor%}
+    </ul>
+</div>
+{% endblock %}
