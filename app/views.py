@@ -1,17 +1,18 @@
 import os
 from app import app, db
 from datetime import *
-from flask import render_template, request, redirect, url_for,jsonify,session,send_file
+from flask import render_template,request, redirect, url_for,jsonify,session,send_file
 
 from app.models import User, Wish, Token
 
-import json
-import time
-import requests
+
 import BeautifulSoup
 import bcrypt
 import urlparse
 import urllib
+import json
+import time
+import requests
 
 #First Page
 @app.route('/')
@@ -39,7 +40,7 @@ def signup():
 def login():
     json_data = json.loads(request.data)
     user = db.session.query(User).filter_by(email=json_data['email']).first()
-    if user and user.password ==json_data.get('password'):
+    if user and user.password == bcrypt.hashpw(json_data.get('password').encode('utf-8'), user.password.decode().encode('utf-8')):
         token = Token(user.id)
         db.session.add(token)
         db.session.commit()
@@ -61,8 +62,8 @@ def logout():
         response = jsonify({'status':'did not log out'})
     return response
 
-#View a registered user page
-# curl GET http://lab7-boshes.c9users.io/api/user/37
+#loads up registered users
+
 @app.route('/api/user/<userid>',methods=["GET"])
 def user(userid):
     user = db.session.query(User).filter_by(id=userid).first()
@@ -72,7 +73,7 @@ def user(userid):
         response = jsonify({"error":"1","data":{},'message':'did not retrieve user'})
     return response
 
-#View all users page
+#show a list of all users of the app
 
 @app.route('/api/users',methods=["GET"])
 def users():
@@ -111,6 +112,8 @@ def wishes(userid):
         else:
             response = jsonify({"error":"1", "data":{},'message':'did not create wish'})
         return response
+
+#allows you to add thumbnail from url did this from lab7
 
 @app.route('/api/thumbnail/process', methods=['GET'])
 def get_images():

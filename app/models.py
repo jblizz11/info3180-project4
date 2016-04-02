@@ -1,18 +1,18 @@
-from . import db 
+from . import db
 import random
-from flask.ext.login import UserMixin
-class User(UserMixin,db.Model):     
+
+class User(db.Model):     
     __tablename__ = 'persons'
-    id = db.Column(db.Integer, primary_key=True)  
-    first_name = db.Column(db.String(80))     
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String(80))
     last_name = db.Column(db.String(80))
-    username = db.Column(db.String(80), unique=True)    
+    username = db.Column(db.String(80), unique=True)
     password = db.Column(db.String(255), unique=True)
     email = db.Column(db.String(120), unique=True)
     addon = db.Column(db.DateTime,nullable=False)
     wishes = db.relationship('Wish',backref='user',lazy='dynamic')
     tokens = db.relationship('Token',backref='user',lazy='dynamic')
-    
+
     def __init__(self,first_name,last_name,username,password,email,addon):
         self.first_name = first_name
         self.last_name = last_name
@@ -20,7 +20,7 @@ class User(UserMixin,db.Model):
         self.password = password
         self.email = email
         self.addon = addon
-        
+
     def is_authenticated(self):
         return True
 
@@ -48,8 +48,8 @@ class Wish(db.Model):
     name = db.Column(db.String(255))
     description = db.Column(db.String(255))
     addon = db.Column(db.DateTime,nullable=False)
-    
-    
+
+
     def __init__(self,userid,url,thumbnail,name,description,addon):
         self.userid = userid
         self.url = url
@@ -57,7 +57,7 @@ class Wish(db.Model):
         self.name = name
         self.description = description
         self.addon = addon
-    
+
     def get_id(self):
         try:
             return unicode(self.id)  # python 2 support
@@ -66,12 +66,12 @@ class Wish(db.Model):
 
     def __repr__(self):
         return '<Wish %r>' % (self.name)
-        
+
 class Token(db.Model):
     __tablename__ = 'tokens'
     userid = db.Column(db.Integer, db.ForeignKey('persons.id'))
     token = db.Column(db.String(255), primary_key=True)
-    
+
     def __init__(self,userid):
         self.userid = userid
         tokens = db.session.query(Token).all()
@@ -83,5 +83,3 @@ class Token(db.Model):
 
 def tokenGenerate():
     return ''.join(random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') for i in range (16))
-    
-    

@@ -3,10 +3,6 @@ from wtforms import Form,StringField, BooleanField,StringField,PasswordField,Sub
 
 
 
-#class LoginForm(Form):
-    #openid = StringField('openid', validators=[DataRequired()])
-    #remember_me = BooleanField('remember_me', default=False)
-
 class LoginNew(Form):
     username = TextField('username', [validators.DataRequired()])
     password = PasswordField('password', [validators.DataRequired()])
@@ -19,7 +15,7 @@ class WishForm(Form):
     status = SelectField('Status',choices=[('0','Not Received'),('1','Received')])
     submit = SubmitField('Add Wish')
 
-class ProfileForm(Form):
+class signUpForm(Form):
     uploadedfile = FileField('User Image')
     username = StringField('Username', [validators.Required()])
     password = PasswordField('Password', [validators.Required()])
