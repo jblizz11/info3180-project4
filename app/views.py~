@@ -1,35 +1,17 @@
-"""
-Flask Documentation:     http://flask.pocoo.org/docs/
-Jinja2 Documentation:    http://jinja.pocoo.org/2/documentation/
-Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
-
-This file creates your application.
-"""
 import os
-import time
-import datetime
+from app import app, db
 from datetime import *
+from flask import render_template, request, redirect, url_for,jsonify,session,send_file
+
+from app.models import User, Wish, Token
+
 import json
+import time
 import requests
 import BeautifulSoup
-import bcrypt 
-
-
-
+import bcrypt
 import urlparse
-import urllib 
-from app import app
-from flask import render_template, request, redirect, url_for,jsonify,g,session,flash,send_file
-from app import db
-from werkzeug import secure_filename
-from app.models import User, Wish, Token
-from app.forms import LoginNew,WishForm,ProfileForm
-
-
-
-SECRET_KEY="super secure key"
-
-app.config.from_object(__name__)
+import urllib
 
 #Landing page
 @app.route('/')
@@ -40,8 +22,8 @@ def index():
 #Sign up page
 @app.route('/api/user/register', methods=['POST'])
 def signup():
-    json_data = json.loads(request.data)
-    user = User(json_data.get('firstname'), json_data.get('lastname'), json_data.get('username'),json_data.get('password'),json_data.get('email'),datetime.now())
+    json_data = json.loads(request.get_json(force=True)
+    user = User(json_data.get('firstname'), json_data.get('lastname'),json_data.get('username'),json_data.get('password'),json_data.get('email'),datetime.now())
     print user
     if user:
         db.session.add(user)
@@ -56,7 +38,7 @@ def signup():
 def login():
     json_data = json.loads(request.data)
     user = db.session.query(User).filter_by(email=json_data['email']).first()
-    if user and user.password == bcrypt.hashpw(json_data.get('password').encode('utf-8'), user.password.decode().encode('utf-8')):
+    if user and user.password ==json_data.get('password'):
         token = Token(user.id)
         db.session.add(token)
         db.session.commit()

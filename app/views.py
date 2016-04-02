@@ -1,55 +1,38 @@
-"""
-Flask Documentation:     http://flask.pocoo.org/docs/
-Jinja2 Documentation:    http://jinja.pocoo.org/2/documentation/
-Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
-
-This file creates your application.
-"""
 import os
-import time
-import datetime
+from app import app, db
 from datetime import *
+from flask import render_template, request, redirect, url_for,jsonify,session,send_file
+
+from app.models import User, Wish, Token
+
 import json
+import time
 import requests
 import BeautifulSoup
-import bcrypt 
-
-
-
+import bcrypt
 import urlparse
-import urllib 
-from app import app
-from flask import render_template, request, redirect, url_for,jsonify,g,session,flash,send_file
-from app import db
-from werkzeug import secure_filename
-from app.models import User, Wish, Token
-from app.forms import LoginNew,WishForm,ProfileForm
+import urllib
 
-
-
-SECRET_KEY="super secure key"
-
-app.config.from_object(__name__)
-
-#Landing page
+#First Page
 @app.route('/')
 def index():
     """Render website's home page."""
     return app.send_static_file('index.html')
-    
+
 #Sign up page
 @app.route('/api/user/register', methods=['POST'])
 def signup():
     json_data = json.loads(request.data)
-    user = User(json_data.get('firstname'), json_data.get('lastname'), json_data.get('username'),json_data.get('password'),json_data.get('email'),datetime.now())
+    user = User(json_data.get('firstname'), json_data.get('lastname'), json_data.get('username'),bcrypt.hashpw(json_data.get('password').encode('utf-8'), bcrypt.gensalt()),json_data.get('email'),datetime.now())
     print user
     if user:
         db.session.add(user)
         db.session.commit()
         response = jsonify({"error":"null","data":{'firstname':json_data.get('firstname'),'lastname':json_data.get('lastname'),'username':json_data.get('username'),'email':json_data.get('email')},"message":"Sucess"})
-    else:   
+    else:
         response = jsonify({"error":"1","data":{},'message':'not signed up'})
     return response
+
 
 #Log in page for a registered user
 @app.route('/api/user/login', methods=["POST"])
@@ -77,7 +60,7 @@ def logout():
     else:
         response = jsonify({'status':'did not log out'})
     return response
-    
+
 #View a registered user page
 # curl GET http://lab7-boshes.c9users.io/api/user/37
 @app.route('/api/user/<userid>',methods=["GET"])
@@ -88,7 +71,7 @@ def user(userid):
     else:
         response = jsonify({"error":"1","data":{},'message':'did not retrieve user'})
     return response
-    
+
 #View all users page
 # curl GET http://lab7-boshes.c9users.io/api/users
 @app.route('/api/users',methods=["GET"])
@@ -153,7 +136,7 @@ def get_images():
     else:
         response = jsonify({'error':'1','data':{},'message':'Unable to extract thumbnails'})
     return response
-            
+
 #Used for time added on items
 def timeinfo(entry):
     day = time.strftime("%a")
@@ -170,7 +153,7 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     return response
-  
+
 #Runs application
 if __name__ == '__main__':
     app.run(debug=True,host="0.0.0.0",port="8888")
