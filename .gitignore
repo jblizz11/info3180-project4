@@ -39,3 +39,4 @@ pip-log.txt
 *.[oa]
 *.py[co]
 *.rbc
+bower_components/

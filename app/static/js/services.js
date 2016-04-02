@@ -1,115 +1,95 @@
 angular.module('WishList').factory('APIService',['$http','$q',function($http,$q){
-    var user = null;
-    
     return{
-        isLoggedIn : function(){
-            if (user){
-                return true;
-            }
-            else{
-                return false;
-            }
-        },
-        loginUser : function(username,password){
+        loginUser : function(email,password){
             var deferred = $q.defer();
-            $http.post('/login',{username: username, password:password})
-            .success(function(data){
-                if (status ==200 && data.result){
-                    user = true;
-                    deferred.resolve();
-                }
-                else{
-                    user = false;
-                    deferred.reject();
-                }
-            })
-            .error(function(err){
-                user = false
-                deferred.reject(err);
-            })
-            return deferred.promise;
-        },
-        logoutUser : function(){
-            var deferred = $q.defer();
-            $http.post('/logout')
-            .success(function(data){
-                user = false;
-                deferred.resolve(data);
-            })
-            .error(function(err){
-                user = false
-                deferred.reject(err);
-            })
-            return deferred.promise;
-        },
-        signUpUser : function(filepath,firstname,lastname,username,password,email){
-            var deferred = $q.defer();
-            $http.post('/signup',{filepath:filepath,firstname:firstname,lastname:lastname,username:username,password:password,email:email})
+            $http.post('/api/user/login',{email:email, password:password})
             .success(function(data){
                 deferred.resolve(data);
             })
             .error(function(err){
                 deferred.reject(err);
-            })
-            return deferred.promise;
-        },
-        getUserStatus : function(){
-            $http.get('/status')
-            .success(function(data){
-                if (data.status){
-                    user = true;
-                }
-                else{
-                    user = false;
-                }
-            })
-            .error(function (data){
-                user = false;
             });
+            return deferred.promise;
         },
-        newWish : function(userid,filepath,title,description,status){
+        logoutUser : function(token){
             var deferred = $q.defer();
-            $http.post('/wish/'+userid,{userid:userid,filepath:filepath,title:title,description:description,status:status})
+            $http.post('/api/user/logout',{token:token})
             .success(function(data){
                 deferred.resolve(data);
             })
             .error(function(err){
                 deferred.reject(err);
+            });
+            return deferred.promise;
+        },
+        signUpUser : function(firstname,lastname,username,password,email){
+            var deferred = $q.defer();
+            $http.post('/api/user/register',{firstname:firstname,lastname:lastname,username:username,password:password,email:email})
+            .success(function(data){
+                deferred.resolve(data);
             })
+            .error(function(err){
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        },
+         getUsers : function(){
+            var deferred = $q.defer();
+            $http.get('/api/users')
+            .success(function(data){
+                deferred.resolve(data);
+            })
+            .error(function(err){
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        },
+        getUser : function(userid){
+            var deferred = $q.defer();
+            $http.get('/api/user/'+userid,{userid: userid})
+            .success(function(data){
+                deferred.resolve(data);
+            })
+            .error(function(err){
+                deferred.reject(err);
+            });
+            return deferred.promise;
+        },
+        newWish : function(userid,url,thumbnail,title,description,status){
+            var deferred = $q.defer();
+            $http.post('/api/user/'+userid+'/wishlist',{userid:userid,url:url,thumbnail:thumbnail,title:title,description:description,status:status})
+            .success(function(data){
+                deferred.resolve(data);
+            })
+            .error(function(err){
+                deferred.reject(err);
+            });
             return deferred.promise;
         },
         getImages : function(url){
+            console.log(url);
             var deferred = $q.defer();
-            $http.post('/images', {url:url})
+            $http.get('/api/thumbnail/process?url='+encodeURI(url))
             .success(function(data){
+                console.log(data);
                 deferred.resolve(data);
             })
             .error(function(err){
                 deferred.reject(err);
-            })
+            });
             return deferred.promise;
         },
-        getusers : function(users){
+        getWishes : function(userid){
             var deferred = $q.defer();
-            $http.post('/users',{'users': users})
+            $http.get('/api/user/'+userid+'/wishlist',{userid:userid})
             .success(function(data){
                 deferred.resolve(data);
             })
             .error(function(err){
                 deferred.reject(err);
-            })
-            return deferred.promise;
-        },
-        getuser : function(userid){
-            var deferred = $q.defer();
-            $http.post('/user/'+userid,{'userid': userid})
-            .success(function(data){
-                deferred.resolve(data);
-            })
-            .error(function(err){
-                deferred.reject(err);
-            })
+                
+            });
             return deferred.promise;
         }
-    }
+    };
 }]);
