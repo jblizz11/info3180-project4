@@ -73,7 +73,7 @@ def user(userid):
     return response
 
 #View all users page
-# curl GET http://lab7-boshes.c9users.io/api/users
+
 @app.route('/api/users',methods=["GET"])
 def users():
     users = db.session.query(User).all()
@@ -87,8 +87,6 @@ def users():
     return response
 
 #New Wish
-# curl GET http://lab7-boshes.c9users.io/api/user/37/wishlist
-# curl -H "Content-Type: application/json" -X POST -d '{"url":"http://www.google.com","title":"Google.com","description":"All of Google"}' http://lab7-boshes.c9users.io/api/user/37/wishlist
 @app.route('/api/user/<userid>/wishlist',methods=["GET","POST"])
 def wishes(userid):
     if request.method=="GET":
@@ -114,8 +112,6 @@ def wishes(userid):
             response = jsonify({"error":"1", "data":{},'message':'did not create wish'})
         return response
 
-#Used in image search on new wishes
-# curl -X GET http://lab7-boshes.c9users.io/api/thumbnail/process?url=http://www.amazon.com/gp/product/B00MRJ8LSU/
 @app.route('/api/thumbnail/process', methods=['GET'])
 def get_images():
     url = request.args.get('url')
