@@ -10,6 +10,45 @@ angular.module('WishList').controller('WishesController',['$scope','$location','
         $scope.wishes = data.data.wishes;
     })
     .catch(function(){
-        
+
     });
+    $scope.shareWishlist = function(){
+        var modalInstance = $uibModal.open({
+            templateUrl : 'static/templates/sharewishes.html',
+            controller : 'ShareModal',
+            size: 'md',
+            animation: true,
+            resolve: {
+                user : function(){
+                    return $scope.currentUserId;
+                },
+                wishes : function(){
+                    return wishes;
+                }
+            }
+        });
+        modalInstance.result.then(function(data){
+            APIService.sendWishes(data.emails,data.subject,data.message,data.wishes,data.user)
+            .then(function(){
+                $location.path('/wishes');
+            });
+        });
+    };
 }]);
+
+angular.module('WishList').controller('ShareModal',function($scope,$uibModalInstance,user,wishes){
+
+    $scope.confirm = function(){
+        var emails = $scope.emails.split(',');
+        var wishtitles = [];
+        for(var wish=0; wish<wishes.length;wish++){
+            wishtitles.push(wishes[wish].title);
+        }
+        var result = ({"user":user,"emails":emails,"subject":$scope.subject,"message":$scope.message,"wishes":wishtitles});
+        $uibModalInstance.close(result);
+    };
+
+    $scope.cancel= function (){
+        $uibModalInstance.dismiss();
+    };
+});

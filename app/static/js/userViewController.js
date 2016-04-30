@@ -9,6 +9,14 @@ angular.module('WishList').controller('UserViewController',['$scope','$location'
         $scope.user = data.data;
     })
     .catch(function(){
-        
+
     });
+
+     APIService.getWishes($scope.currentUserId)
+     .then(function(data){
+         $scope.wishes = data.data.wishes;
+         $scope.numWishes = $scope.wishes.length;
+     })
+     .catch(function(){
+     });
 }]);

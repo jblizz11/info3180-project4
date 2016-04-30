@@ -13,7 +13,9 @@ import urllib
 import json
 import time
 import requests
-
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 #First Page
 @app.route('/')
 def index():
@@ -153,6 +155,43 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     return response
 
+@app.route('/api/send/<userid>',methods=['POST'])
+def send(userid):
+    user = db.session.query(User).filter_by(id=userid).first()
+    json_data = json.loads(request.data)
+    fromaddr = str(user.email)
+    sender = str(user.first_name) + " " + str(user.last_name)
+    emails = json_data.get('emails')
+    message = json_data.get('message')
+    subject = json_data.get('subject')
+    wishes = json_data.get('wishes')
+    wishlist = []
+    for wish in wishes:
+        wishlist.append(str(wish))
+    allWishes = ", ".join(str(wish) for wish in wishlist)
+    msg = MIMEMultipart()
+    emaillist = []
+    for email in emails:
+        emaillist.append(str(email))
+    msg['From'] = fromaddr
+    msg['To'] = ", ".join(emaillist)
+    msg['Subject'] = subject
+    header = "hello, this email is from " + sender + " <" + fromaddr + "> " + "to you about their wishlist. here is the attached message: "
+    footer = "THank you"
+    msg.attach(MIMEText(header,'plain'))
+    msg.attach(MIMEText(message,'plain'))
+    msg.attach(MIMEText('Their Wishlist: '+ allWishes,'plain'))footer = "You can view this wishlist, among others, by searching for their name at this link: http://quiet-sierra-48055.herokuapp.com/#/users (Login is required)"
+    msg.attach(MIMEText(footer,'plain'))
+    messageToSend = msg.as_string()
+    username = 'info3180.omairemorgan@gmail.com'
+    password = 'errowsvahimyhagz'
+    server = smtplib.SMTP('smtp.gmail.com:587')
+    server.starttls()
+    server.login(username,password)
+    server.sendmail(sender,emaillist,messageToSend)
+    server.quit()
+    response = jsonify({"error":"null","data":{"emails":emaillist,"subject":subject,"message":message,"wishes":allWishes},"message":"Success"})
+    return response
 #Runs application
 if __name__ == '__main__':
     app.run(debug=True,host="0.0.0.0",port="8888")
